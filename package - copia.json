@@ -1,0 +1,24 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "export": "next export",
+    "lint": "next lint",
+    "cypress": "cypress open"
+  },
+  "dependencies": {
+    "next": "latest",
+    "next": "^15.1.0",
+    "react": "^17.0.2",
+    "react": "^18.3.1",
+    "react-dom": "^17.0.2",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "cypress": "^9.1.1",
+    "cypress": "^13.16.1",
+    "eslint-config-next": "12.0.7"
+  }
+}
