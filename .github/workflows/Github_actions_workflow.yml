@@ -33,13 +33,17 @@ jobs:
         run: npm install
 
       - name: Run Cypress tests
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v6
         with:
           runTests: true
           continue-on-fail: true
+        id: run-cypress # Añadimos un ID para capturar la salida del paso.
 
-      - name: Save results
-        run: echo "$(cat cypress/results.txt)" > result.txt
+      # - name: Save results
+      #   run: npx cypress run > result.txt || echo "Cypress tests failed but continuing..."
+
+    - name: Save results
+      run: echo "${{ steps.run-cypress.outputs.stdout }}" > result.txt
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
