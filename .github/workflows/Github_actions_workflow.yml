@@ -21,9 +21,43 @@ jobs:
   #     # Pas 3: Executar el linter
   #     - name: Run linter
   #       run: npm run lint
-
+  
   cypress_job:
+    needs: linter_job
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Start server and run Cypress tests
+        uses: cypress-io/github-action@v5
+        with:
+          config-file: cypress.json
+          build: npm run build
+          start: npm start
+        continue-on-error: true
+        id: cypress
+          # start: npm run dev
+          # wait-on: http://localhost:3000
+          # wait-on-timeout: 120
+          # record: false
+          # browser: electron
+
+      - name: Save Cypress results
+        run: echo "${{ steps.cypress.outputs.run_url }}" > result.txt
+
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-results
+          path: result.txt
+
+  # cypress_job:
+  #   runs-on: ubuntu-latest
     # needs: linter_job
   #   steps:
   #     - name: Checkout code
@@ -54,19 +88,21 @@ jobs:
   #         name: cypress-results
   #         path: result.txt
 
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
+  # cypress_job:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 16
 
-      - run: npm ci
-      - run: npm run cypress || true
-      - run: echo "Success" > result.txt
+  #     - run: npm ci
+  #     - run: npm run cypress || true
+  #     - run: echo "Success" > result.txt
       
-      - uses: actions/upload-artifact@v4
-        with:
-          path: result.txt
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         path: result.txt
 
   # deploy_job:
   #   runs-on: ubuntu-latest
