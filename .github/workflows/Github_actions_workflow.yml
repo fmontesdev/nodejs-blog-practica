@@ -33,7 +33,7 @@ jobs:
         run: npm install
 
       - name: Run Cypress tests
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@v5
         with:
           runTests: true
           continue-on-fail: true
@@ -42,14 +42,14 @@ jobs:
       # - name: Save results
       #   run: npx cypress run > result.txt || echo "Cypress tests failed but continuing..."
 
-    - name: Save results
-      run: echo "${{ steps.run-cypress.outputs.stdout }}" > result.txt
+      - name: Save results
+        run: echo "${{ steps.run-cypress.outputs.stdout }}" > result.txt
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: cypress-results
-          path: result.txt
+        - name: Upload artifact
+          uses: actions/upload-artifact@v3
+          with:
+            name: cypress-results
+            path: result.txt
 
   # deploy_job:
   #   runs-on: ubuntu-latest
