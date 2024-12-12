@@ -21,9 +21,9 @@ jobs:
   #     # Pas 3: Executar el linter
   #     - name: Run linter
   #       run: npm run lint
-  
+
   cypress_job:
-    needs: linter_job
+    # needs: linter_job
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
