@@ -45,11 +45,11 @@ jobs:
       - name: Save results
         run: echo "${{ steps.run-cypress.outputs.stdout }}" > result.txt
 
-        - name: Upload artifact
-          uses: actions/upload-artifact@v3
-          with:
-            name: cypress-results
-            path: result.txt
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-results
+          path: result.txt
 
   # deploy_job:
   #   runs-on: ubuntu-latest
