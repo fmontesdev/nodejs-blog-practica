@@ -2,14 +2,19 @@ name: practica-github-actions
 on: [push]
 jobs:
   linter_job:
+    # El job s'executa en una màquina Ubuntu
     runs-on: ubuntu-latest
-    steps:
+    
+    teps:
+      # Pas 1: Descarregar el codi del repositori
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Pas 2: Instal·lar les dependències del projecte
       - name: Install dependencies
         run: npm install
 
+      # Pas 3: Executar el linter
       - name: Run linter
         run: npm run lint
 
