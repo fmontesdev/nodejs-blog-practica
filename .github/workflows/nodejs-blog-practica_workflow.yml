@@ -48,16 +48,21 @@ jobs:
       - name: Build Next app
         run: npm run build
 
-      # Ejecuta los tests de cypress
-      - name: Run Cypress tests
-        id: run_cypress
+      # Arranca la app con la acción oficial, pero SIN ejecutar los tests
+      - name: Start Next server with Cypress action
         uses: cypress-io/github-action@v6
         with:
           start: npm run start
-          wait-on: "http://localhost:3000"
+          wait-on: 'http://localhost:3000'
           wait-on-timeout: 60
-          # Fuerza que si Cypress falla, la conclusión del step sea "failure"
-          fail-on-run-failure: true
+          # No ejecuta los tests en este paso
+          runTests: false
+
+      # Ejecuta los test de Cypress manualmente
+      - name: Run Cypress tests
+        id: run_cypress
+        run: |
+          npx cypress run
         # Permite que el workflow continúe incluso si hay fallos en los tests
         continue-on-error: true
 
