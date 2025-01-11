@@ -195,14 +195,7 @@ jobs:
       - name: Update metrics in README
         uses: lowlighter/metrics@latest
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          # Opcional: Si tienes un fichero de configuración, por ejemplo:
-          # config_file: ".github/metrics.yml"
-
-          # Puedes ajustar otros parámetros según tus preferencias:
-          # theme: "default"               # O "dracula", "merko", "onedark", etc.
-          # show_icons: "true"             # Para mostrar iconos junto a las métricas
-          # repos: "fmontesdev"            # Para filtrar solo tus repositorios (si es necesario)
+          github_token: ${{ secrets.METRICS_TOKEN }}
 
       # Commit y push de los cambios en el README.md
       - name: Commit and push updated README
