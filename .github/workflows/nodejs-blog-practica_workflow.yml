@@ -56,6 +56,8 @@ jobs:
           start: npm run start
           wait-on: "http://localhost:3000"
           wait-on-timeout: 60
+          # Fuerza que si Cypress falla, la conclusión del step sea "failure"
+          fail-on-run-failure: true
         # Permite que el workflow continúe incluso si hay fallos en los tests
         continue-on-error: true
 
