@@ -1,0 +1,12 @@
+name: "Send Mail Action"
+description: "Enviar correo con los resultados"
+inputs:
+  to:
+    required: true
+  subject:
+    required: true
+  body:
+    required: true
+runs:
+  using: "node16"
+  main: "index.js"
