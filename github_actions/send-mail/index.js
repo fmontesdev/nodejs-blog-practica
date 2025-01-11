@@ -9,6 +9,9 @@ async function run() {
 
         const user = process.env.GMAIL_USER;
         const pass = process.env.GMAIL_PASS;
+        if (!user || !pass) {
+            throw new Error("Missing credentials for Gmail authentication");
+        }
 
         let transporter = nodemailer.createTransport({
             service: 'gmail',
