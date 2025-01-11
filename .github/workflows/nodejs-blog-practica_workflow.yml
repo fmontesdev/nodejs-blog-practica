@@ -49,14 +49,16 @@ jobs:
         id: run_cypress
         uses: cypress-io/github-action@v6
         with:
-          command: 'npx cypress run'
+          start: npm run start
+          wait-on: "http://localhost:3000"
+          wait-on-timeout: 60
         # Permite que el workflow continúe incluso si hay fallos en los tests
         continue-on-error: true
 
-      # Paso que verifica el resultado anterior y genera result.txt con success/failure
+      # Comprueba el código de salida y genera result.txt con success/failure
       - name: Save Cypress test results
         run: |
-          if [ "${{ steps.run_cypress.conclusion }}" == "success" ]; then
+          if [ $? -eq 0 ]; then
             echo "success" > result.txt
           else
             echo "failure" > result.txt
