@@ -7,159 +7,159 @@ on:
       - main
 
 jobs:
-  # linter_job:
-  #   # Se ejecuta en una máquina virtual de Ubuntu
-  #   runs-on: ubuntu-latest
+  linter_job:
+    # Se ejecuta en una máquina virtual de Ubuntu
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     # Descarga el contenido del repositorio en la máquina virtual
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v3
+    steps:
+      # Descarga el contenido del repositorio en la máquina virtual
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-  #     # Configura la versión de Node.js que se usará
-  #     - name: Setup Node
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: 16
+      # Configura la versión de Node.js que se usará
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
 
-  #     # Instala las dependencias definidas en package.json
-  #     - name: Install dependencies
-  #       run: npm install
+      # Instala las dependencias definidas en package.json
+      - name: Install dependencies
+        run: npm install
 
-  #     # Ejecuta el linter para verificar la sintaxis del código
-  #     - name: Run Linter
-  #       run: npm run lint
+      # Ejecuta el linter para verificar la sintaxis del código
+      - name: Run Linter
+        run: npm run lint
 
-  # cypress_job:
-  #   runs-on: ubuntu-latest
-  #   # Indica que este job depende de que termine linter_job
-  #   needs: linter_job
+  cypress_job:
+    runs-on: ubuntu-latest
+    # Indica que este job depende de que termine linter_job
+    needs: linter_job
 
-  #   steps:
-  #     # Descarga el contenido del repositorio en la máquina virtual
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
+    steps:
+      # Descarga el contenido del repositorio en la máquina virtual
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  #     # Instala las dependencias definidas en package.json
-  #     - name: Install dependencies
-  #       run: npm install
+      # Instala las dependencias definidas en package.json
+      - name: Install dependencies
+        run: npm install
 
-  #     # Construye la app Next antes de arrancarla
-  #     - name: Build Next app
-  #       run: npm run build
+      # Construye la app Next antes de arrancarla
+      - name: Build Next app
+        run: npm run build
 
-  #     # Arranca el servidor en segundo plano
-  #     - name: Start Next server
-  #       run: |
-  #         npm run start &
-  #         echo "Server started in background"
+      # Arranca el servidor en segundo plano
+      - name: Start Next server
+        run: |
+          npm run start &
+          echo "Server started in background"
 
-  #     # Espera hasta que localhost:3000 esta listo
-  #     - name: Wait for server
-  #       run: npx wait-on http://localhost:3000 --timeout=60000
+      # Espera hasta que localhost:3000 esta listo
+      - name: Wait for server
+        run: npx wait-on http://localhost:3000 --timeout=60000
 
-  #     # Ejecuta los tests de Cypress, aunque falle crea cypress_exitcode.txt
-  #     - name: Run Cypress
-  #       id: run_cypress
-  #       continue-on-error: true
-  #       run: |
-  #         # Desactiva 'exit on error' en Bash para que si Cypress falla, este script continúe
-  #         set +e
-  #         npx cypress run
-  #         EXIT_CODE=$?
-  #         set -e
+      # Ejecuta los tests de Cypress, aunque falle crea cypress_exitcode.txt
+      - name: Run Cypress
+        id: run_cypress
+        continue-on-error: true
+        run: |
+          # Desactiva 'exit on error' en Bash para que si Cypress falla, este script continúe
+          set +e
+          npx cypress run
+          EXIT_CODE=$?
+          set -e
 
-  #         echo "Cypress exit code was: $EXIT_CODE"
-  #         echo "$EXIT_CODE" > cypress_exitcode.txt
-  #         ls -l
-  #         cat cypress_exitcode.txt
+          echo "Cypress exit code was: $EXIT_CODE"
+          echo "$EXIT_CODE" > cypress_exitcode.txt
+          ls -l
+          cat cypress_exitcode.txt
 
-  #     # Lee el exit code y crea result.txt con "success" o "failure"
-  #     - name: Evaluate Cypress results
-  #       run: |
-  #         exit_code=$(cat cypress_exitcode.txt)
+      # Lee el exit code y crea result.txt con "success" o "failure"
+      - name: Evaluate Cypress results
+        run: |
+          exit_code=$(cat cypress_exitcode.txt)
 
-  #         if [ "$exit_code" -eq 0 ]; then
-  #           echo "success" > result.txt
-  #         else
-  #           echo "failure" > result.txt
-  #         fi
+          if [ "$exit_code" -eq 0 ]; then
+            echo "success" > result.txt
+          else
+            echo "failure" > result.txt
+          fi
 
-  #         echo "Contenido de result.txt:"
-  #         cat result.txt
+          echo "Contenido de result.txt:"
+          cat result.txt
 
-  #     # Sube el archivo result.txt como artefacto
-  #     - name: Upload Cypress results
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: cypress-result
-  #         path: result.txt
+      # Sube el archivo result.txt como artefacto
+      - name: Upload Cypress results
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-result
+          path: result.txt
 
-  # add_badge_job:
-  #   runs-on: ubuntu-latest
-  #   needs: cypress_job
+  add_badge_job:
+    runs-on: ubuntu-latest
+    needs: cypress_job
 
-  #   steps:
-  #     # Descarga el contenido del repositorio en la máquina virtual
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
+    steps:
+      # Descarga el contenido del repositorio en la máquina virtual
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  #     # Descarga del artefacto creado en cypress_job
-  #     - name: Download cypress artifact
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: cypress-result
-  #         path: . # Descarga en el directorio raíz
+      # Descarga del artefacto creado en cypress_job
+      - name: Download cypress artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cypress-result
+          path: . # Descarga en el directorio raíz
 
-  #     # Genera un output con la lectura de result.txt
-  #     - name: Set outcome output
-  #       id: set_outcome
-  #       run: echo "::set-output name=cypress_outcome::$(cat result.txt)"
+      # Genera un output con la lectura de result.txt
+      - name: Set outcome output
+        id: set_outcome
+        run: echo "::set-output name=cypress_outcome::$(cat result.txt)"
 
-  #     # Llama a la acción personalizada que modifica el README
-  #     - name: Update README with badge
-  #       uses: ./ #action.yml
-  #       with:
-  #         # outcome es el valor que contiene "success" o "failure"
-  #         outcome: ${{ steps.set_outcome.outputs.cypress_outcome }}
+      # Llama a la acción personalizada que modifica el README
+      - name: Update README with badge
+        uses: ./ #action.yml
+        with:
+          # outcome es el valor que contiene "success" o "failure"
+          outcome: ${{ steps.set_outcome.outputs.cypress_outcome }}
 
-  #     # Hace un commit de los cambios del README
-  #     - name: Commit and push changes
-  #       run: |
-  #         git config user.name "github-actions"
-  #         git config user.email "actions@github.com"
-  #         git add README.md
-  #         git commit -m "Actualizando README con badge de Cypress"
-  #         git push
+      # Hace un commit de los cambios del README
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add README.md
+          git commit -m "Actualizando README con badge de Cypress"
+          git push
 
-  # deploy_job:
-  #   runs-on: ubuntu-latest
-  #   needs: cypress_job
+  deploy_job:
+    runs-on: ubuntu-latest
+    needs: cypress_job
     
-  #   steps:
-  #     # Descarga el contenido del repositorio en la máquina virtual
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
+    steps:
+      # Descarga el contenido del repositorio en la máquina virtual
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  #     # Despliega la aplicación en Vercel
-  #     - name: Deploy to Vercel
-  #       uses: amondnet/vercel-action@v20
-  #       with:
-  #         vercel-token: ${{ secrets.VERCEL_TOKEN }}
-  #         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-  #         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-  #         working-directory: ./
-  #         vercel-args: "--prod"
+      # Despliega la aplicación en Vercel
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./
+          vercel-args: "--prod"
 
   notification_job:
     runs-on: ubuntu-latest
     # Este job depende de los 4 jobs previos
-    # needs: [linter_job, cypress_job, add_badge_job, deploy_job]
+    needs: [linter_job, cypress_job, add_badge_job, deploy_job]
     # Se ejecutará incluso si alguno de esos jobs ha fallado
     if: always()
 
     steps:
-      # Porque necesita acceso a arvhivos del repositorio
+      # Necesita acceso a archivos del repositorio
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -175,7 +175,7 @@ jobs:
           body: |
             Se ha realizado un push en la rama main que ha provocado la ejecución del workflow "nodejs-blog-practica_workflow" con los siguientes resultados:
 
-            # - linter_job: ${{ needs.linter_job.result }}
-            # - cypress_job: ${{ needs.cypress_job.result }}
-            # - add_badge_job: ${{ needs.add_badge_job.result }}
-            # - deploy_job: ${{ needs.deploy_job.result }}
+            - linter_job: ${{ needs.linter_job.result }}
+            - cypress_job: ${{ needs.cypress_job.result }}
+            - add_badge_job: ${{ needs.add_badge_job.result }}
+            - deploy_job: ${{ needs.deploy_job.result }}
