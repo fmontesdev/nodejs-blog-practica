@@ -44,6 +44,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      # Construimos la app Next antes de arrancarla
+      - name: Build Next app
+        run: npm run build
+
       # Ejecuta los tests de cypress
       - name: Run Cypress tests
         id: run_cypress
@@ -55,10 +59,10 @@ jobs:
         # Permite que el workflow continúe incluso si hay fallos en los tests
         continue-on-error: true
 
-      # Comprueba el código de salida y genera result.txt con success/failure
+      # Usa la conclusión del paso anterior y genera result.txt con success/failure
       - name: Save Cypress test results
         run: |
-          if [ $? -eq 0 ]; then
+          if [ "${{ steps.run_cypress.conclusion }}" = "success" ]; then
             echo "success" > result.txt
           else
             echo "failure" > result.txt
