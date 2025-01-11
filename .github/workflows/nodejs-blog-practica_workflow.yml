@@ -161,7 +161,7 @@ jobs:
     steps:
       # Acción personalizada que envía el correo
       - name: Send notification email
-        uses: ./.github/actions/send-mail
+        uses: ./github_actions/send-mail
         with:
           to: ${{ secrets.PERSONAL_EMAIL }}
           subject: "Resultado del workflow ejecutado"
