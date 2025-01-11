@@ -159,6 +159,10 @@ jobs:
     if: always()
 
     steps:
+      # Porque necesita acceso a arvhivos del repositorio
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       # Acción personalizada que envía el correo
       - name: Send notification email
         uses: ./github_actions/send-mail
