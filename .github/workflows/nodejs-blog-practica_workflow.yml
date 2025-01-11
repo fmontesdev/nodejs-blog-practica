@@ -192,8 +192,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}  # Este token ya lo provee GitHub
 
       # Action metrics-embed para actualizar el README
-      - name: Update metrics embed in README
-        uses: lowlighter/metrics-embed@v1
+      - name: Update metrics in README
+        uses: lowlighter/metrics@latest
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           # Opcional: Si tienes un fichero de configuración, por ejemplo:
