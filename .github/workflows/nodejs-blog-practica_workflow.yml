@@ -195,7 +195,13 @@ jobs:
       - name: Update metrics in README
         uses: lowlighter/metrics@latest
         with:
-          github_token: ${{ secrets.METRICS_TOKEN }}
+          # PAT personal access token, diferente a GITHUB_TOKEN
+          token: ${{ secrets.METRICS_TOKEN }}
+          user: fmontesdev
+          base: repositories          
+          template: classic           
+          config_timezone: Europe/Madrid 
+
 
       # Commit y push de los cambios en el README.md
       - name: Commit and push updated README
