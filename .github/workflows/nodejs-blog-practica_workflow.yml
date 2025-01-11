@@ -48,19 +48,31 @@ jobs:
       - name: Build Next app
         run: npm run build
 
-      # Inicia el servidor, espera que este lisot en localhost:3000, ejecuta Cypress, captura exit code y genera result.txt
-      - name: Start server & run Cypress
+      # Arranca el servidor en 2º plano
+      - name: Start Next server
         run: |
           npm run start &
-          
-          npx wait-on http://localhost:3000 --timeout=60000
+          echo "Server started in background"
 
+      # Espera hasta que localhost:3000 esta listo
+      - name: Wait for server
+        run: npx wait-on http://localhost:3000 --timeout=60000
+
+      # Ejecuta los tests de Cypress, guarda exit code en cypress_exitcode.txt
+      - name: Run Cypress
+        id: run_cypress
+        continue-on-error: true
+        run: |
           npx cypress run
-          EXIT_CODE=$?
+          echo $? > cypress_exitcode.txt
+          echo "Cypress exit code was: $(cat cypress_exitcode.txt)"
 
-          echo "Cypress exit code: $EXIT_CODE"
+      # Lee el exit code y crea result.txt con "success" o "failure"
+      - name: Evaluate Cypress results
+        run: |
+          exit_code=$(cat cypress_exitcode.txt)
 
-          if [ "$EXIT_CODE" -eq 0 ]; then
+          if [ "$exit_code" -eq 0 ]; then
             echo "success" > result.txt
           else
             echo "failure" > result.txt
@@ -68,8 +80,6 @@ jobs:
 
           echo "Contenido de result.txt:"
           cat result.txt
-        # El workflow no se detiene aunque Cypress falle
-        continue-on-error: true
 
       # Sube el archivo result.txt como artefacto
       - name: Upload Cypress results
