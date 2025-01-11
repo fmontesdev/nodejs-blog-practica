@@ -1,0 +1,31 @@
+name: nodejs-blog-practica
+
+# Se ejecuta cuando se hace push a la rama main
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  linter_job:
+    # Se ejecuta en una máquina virtual de Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Descarga el contenido del repositorio en la máquina virtual
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Configura la versión de Node.js que se usará
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      # Instala las dependencias definidas en package.json
+      - name: Install dependencies
+        run: npm install
+
+      # Ejecuta el linter para verificar la sintaxis del código
+      - name: Run Linter
+        run: npm run lint
