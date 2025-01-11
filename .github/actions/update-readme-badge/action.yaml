@@ -1,0 +1,13 @@
+name: "Update README Badge"
+description: "Modifica el README.md con el badge apropiado en función del outcome de Cypress"
+inputs:
+  outcome:
+    description: "Result of Cypress tests (success or failure)"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Execute script to modify README
+      shell: bash
+      run: |
+        ./entrypoint.sh "${{ inputs.outcome }}"

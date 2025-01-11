@@ -44,11 +44,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Construimos la app Next antes de arrancarla
+      # Construye la app Next antes de arrancarla
       - name: Build Next app
         run: npm run build
 
-      # Arranca el servidor en 2º plano
+      # Arranca el servidor en segundo plano
       - name: Start Next server
         run: |
           npm run start &
@@ -94,3 +94,40 @@ jobs:
         with:
           name: cypress-result
           path: result.txt
+
+  add_badge_job:
+    needs: cypress_job
+    runs-on: ubuntu-latest
+
+    steps:
+      # Descarga el contenido del repositorio en la máquina virtual
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Descarga del artefacto creado en cypress_job
+      - name: Download cypress artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cypress-result
+          path: . # Descarga en el directorio raíz
+
+      # Genera un output con la lectura de result.txt
+      - name: Set outcome output
+        id: set_outcome
+        run: echo "::set-output name=cypress_outcome::$(cat result.txt)"
+
+      # Llama a la acción personalizada que modifica el README
+      - name: Update README with badge
+        uses: ./.github/actions/update-readme-badge
+        with:
+          # outcome es el valor que contiene "success" o "failure"
+          outcome: ${{ steps.set_outcome.outputs.cypress_outcome }}
+
+      # Hace un commit de los cambios del README
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add README.md
+          git commit -m "Actualizando README con badge de Cypress"
+          git push
