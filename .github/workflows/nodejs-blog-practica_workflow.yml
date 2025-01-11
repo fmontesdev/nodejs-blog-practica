@@ -58,14 +58,21 @@ jobs:
       - name: Wait for server
         run: npx wait-on http://localhost:3000 --timeout=60000
 
-      # Ejecuta los tests de Cypress, guarda exit code en cypress_exitcode.txt
+      # Ejecuta los tests de Cypress, aunque falle crea cypress_exitcode.txt
       - name: Run Cypress
         id: run_cypress
         continue-on-error: true
         run: |
+          # Desactiva 'exit on error' en Bash para que si Cypress falla, este script continúe
+          set +e
           npx cypress run
-          echo $? > cypress_exitcode.txt
-          echo "Cypress exit code was: $(cat cypress_exitcode.txt)"
+          EXIT_CODE=$?
+          set -e
+          
+          echo "Cypress exit code was: $EXIT_CODE"
+          echo "$EXIT_CODE" > cypress_exitcode.txt
+          ls -l
+          cat cypress_exitcode.txt
 
       # Lee el exit code y crea result.txt con "success" o "failure"
       - name: Evaluate Cypress results
