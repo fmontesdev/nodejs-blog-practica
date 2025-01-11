@@ -7,7 +7,10 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Execute script to modify README
+    - name: Ensure script is executable
       shell: bash
-      run: |
-        ./entrypoint.sh "${{ inputs.outcome }}"
+      run: chmod +x entrypoint.sh
+
+    - name: Execute script
+      shell: bash
+      run: ./entrypoint.sh "${{ inputs.outcome }}"

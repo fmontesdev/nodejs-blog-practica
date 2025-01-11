@@ -30,4 +30,4 @@ else
     echo "![Cypress test badge]($BADGE)" >> "$README_FILE"
 fi
 
-echo "README.md modificado con el badge: $BADGE"
+echo "README.md modificado con el badge ($OUTCOME): $BADGE"
