@@ -48,33 +48,28 @@ jobs:
       - name: Build Next app
         run: npm run build
 
-      # Arranca la app con la acción oficial, pero SIN ejecutar los tests
-      - name: Start Next server with Cypress action
-        uses: cypress-io/github-action@v6
-        with:
-          start: npm run start
-          wait-on: 'http://localhost:3000'
-          wait-on-timeout: 60
-          # No ejecuta los tests en este paso
-          runTests: false
-
-      # Ejecuta los test de Cypress manualmente
-      - name: Run Cypress tests
-        id: run_cypress
+      # Inicia el servidor, espera que este lisot en localhost:3000, ejecuta Cypress, captura exit code y genera result.txt
+      - name: Start server & run Cypress
         run: |
+          npm run start &
+          
+          npx wait-on http://localhost:3000 --timeout=60000
+
           npx cypress run
-        # Permite que el workflow continúe incluso si hay fallos en los tests
-        continue-on-error: true
+          EXIT_CODE=$?
 
-      # Usa la conclusión del paso anterior y genera result.txt con success/failure
-      - name: Save Cypress test results
-        run: |
-          if [ "${{ steps.run_cypress.conclusion }}" = "success" ]; then
+          echo "Cypress exit code: $EXIT_CODE"
+
+          if [ "$EXIT_CODE" -eq 0 ]; then
             echo "success" > result.txt
           else
             echo "failure" > result.txt
           fi
+
+          echo "Contenido de result.txt:"
           cat result.txt
+        # El workflow no se detiene aunque Cypress falle
+        continue-on-error: true
 
       # Sube el archivo result.txt como artefacto
       - name: Upload Cypress results
