@@ -316,7 +316,7 @@ jobs:
           # git config user.email "actions@github.com"
           git config --global user.email "f.montesdoria@gmail.com"
           git config --global user.name "fmontesdev"
-          git add github-metrics.svg
+          git add .
           git commit -m "Añadidas métricas al README personal" || echo "No changes to commit"
           git push
 
