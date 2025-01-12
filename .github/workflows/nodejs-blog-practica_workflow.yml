@@ -191,7 +191,7 @@ jobs:
           repository: fmontesdev/fmontesdev
           token: ${{ secrets.PUSH_TOKEN }}
           ssh-strict: true
-          persist-credentials: true
+          persist-credentials: false
           clean: true
           sparse-checkout-cone-mode: true
           fetch-depth: 1
@@ -199,6 +199,10 @@ jobs:
           lfs: false
           submodules: false
           set-safe-directory: true
+      
+      # Antes de actualizar las métricas
+      - name: Print README before metrics update
+        run: cat README.md
 
       # Action metrics-embed para actualizar el README
       - name: Update metrics in README
@@ -209,7 +213,11 @@ jobs:
           user: fmontesdev
           base: repositories          
           template: classic           
-          config_timezone: Europe/Madrid 
+          config_timezone: Europe/Madrid
+
+      # Después de actualizar las métricas
+      - name: Print README after metrics update
+        run: cat README.md
 
       # Commit y push de los cambios en el README.md
       - name: Commit and push updated README
