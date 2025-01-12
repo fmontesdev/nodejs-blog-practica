@@ -288,5 +288,7 @@ jobs:
           git config user.email "actions@github.com"
           git add README.md
           git commit -m "docs: updated README with GitHub metrics image" || echo "No changes to commit"
-          git push
+          # Traemos los cambios remotos y los integramos (usando la estrategia "theirs" para resolver conflictos)
+          git pull --rebase --strategy-option=theirs
+          git push origin main || echo "Push failed; skipping push"
 
