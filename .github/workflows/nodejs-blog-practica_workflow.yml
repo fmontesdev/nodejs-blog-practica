@@ -289,4 +289,5 @@ jobs:
           git config user.email "actions@github.com"
           git add README.md
           git commit -m "docs: updated README with GitHub metrics image" || echo "No changes to commit"
+          git pull --rebase
           git push
