@@ -226,12 +226,31 @@ jobs:
       - name: Print README after metrics update
         run: cat README.md
 
-      # Commit y push de los cambios en el README.md
-      - name: Commit and push updated README
+      # # Commit y push de los cambios en el README.md
+      # - name: Commit and push updated README
+      #   run: |
+      #     echo "Verificando cambios en README.md..."
+      #     git config --global user.email "f.montesdoria@gmail.com"
+      #     git config --global user.name "fmontesdev"
+      #     git add README.md
+      #     git commit -m "Añadidas métricas al README personal" || echo "No changes to commit"
+      #     git push origin main --force
+
+      - name: Debug changes
         run: |
-          echo "Verificando cambios en README.md..."
+          pwd
+          ls -la
+          git status
+          git diff README.md
+          
+      - name: Commit and push changes
+        run: |
           git config --global user.email "f.montesdoria@gmail.com"
           git config --global user.name "fmontesdev"
+          cd $GITHUB_WORKSPACE
           git add README.md
-          git commit -m "Añadidas métricas al README personal" || echo "No changes to commit"
-          git push origin main --force
+          git status
+          git commit -m "docs: updated metrics" || echo "No changes detected"
+          git remote -v
+          git branch
+          git push origin main -f || git push origin HEAD:main -f
