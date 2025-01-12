@@ -189,7 +189,16 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: fmontesdev/fmontesdev
-          token: ${{ secrets.GITHUB_TOKEN }}  # Este token ya lo provee GitHub
+          token: ${{ secrets.PUSH_TOKEN }}
+          ssh-strict: true
+          persist-credentials: true
+          clean: true
+          sparse-checkout-cone-mode: true
+          fetch-depth: 1
+          fetch-tags: false
+          lfs: false
+          submodules: false
+          set-safe-directory: true
 
       # Action metrics-embed para actualizar el README
       - name: Update metrics in README
@@ -210,6 +219,4 @@ jobs:
           git config user.email "actions@github.com"
           git add README.md
           git commit -m "Añadidas métricas al README personal" || echo "No changes to commit"
-          # Cambiar la URL remota para utilizar el PUSH_TOKEN:
-          git remote set-url origin https://fmontesdev:${{ secrets.PUSH_TOKEN }}@github.com/fmontesdev/fmontesdev.git
           git push
