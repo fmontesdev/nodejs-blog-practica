@@ -279,7 +279,7 @@ jobs:
           base: repositories          
           template: classic           
           config_timezone: Europe/Madrid
-          filename: README.md
+          filename: github-metrics.svg
           # output_action: commit
           # committer_token: ${{ secrets.PUSH_TOKEN }}
           # committer_branch: main
