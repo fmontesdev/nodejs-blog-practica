@@ -251,6 +251,8 @@ jobs:
 
   metrics_job:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout current repository
@@ -273,7 +275,7 @@ jobs:
           base: repositories          
           template: classic           
           config_timezone: Europe/Madrid
-          filename: README.md
+          # filename: README.md
           # output_action: commit
           # committer_token: ${{ secrets.PUSH_TOKEN }}
           # committer_branch: main
