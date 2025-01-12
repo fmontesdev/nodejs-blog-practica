@@ -362,13 +362,25 @@ jobs:
           git checkout -B metrics-renders
           git config user.name "github-actions"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # Mover los archivos generados al directorio actual
-          mv /metrics_renders/* ./
+
+          # Verificar si el archivo existe
+          if [ ! -f "/metrics_renders/github-metrics.svg" ]; then
+            echo "Error: El archivo github-metrics.svg no existe en /metrics_renders/"
+            exit 1
+          fi
+
+          # Ajustar permisos si es necesario
+          sudo chmod 644 /metrics_renders/github-metrics.svg
+
+          # Mover el archivo al directorio actual
+          mv /metrics_renders/github-metrics.svg ./
+
           # Actualizar el README con la referencia Markdown
           sed -i -E '/<!--START_SECTION:metrics-->/, /<!--END_SECTION:metrics-->/c\
           <!--START_SECTION:metrics-->\
           \n![GitHub Metrics](github-metrics.svg)\
           \n<!--END_SECTION:metrics-->' README.md
+
           echo "Updated README:"
           cat README.md
 
