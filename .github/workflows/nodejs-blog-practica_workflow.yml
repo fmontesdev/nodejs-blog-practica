@@ -355,22 +355,22 @@ jobs:
       #     echo "README.md after replacement:"
       #     cat README.md
 
-    # 3. Manejar el archivo generado manualmente
-    - name: Move and prepare metrics
-      run: |
-        # Cambiamos a la rama para métricas o la creamos si no existe
-        git checkout -B metrics-renders
-        git config user.name "github-actions"
-        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        # Mover los archivos generados al directorio actual
-        mv /metrics_renders/* ./
-        # Actualizar el README con la referencia Markdown
-        sed -i -E '/<!--START_SECTION:metrics-->/, /<!--END_SECTION:metrics-->/c\
-        <!--START_SECTION:metrics-->\
-        \n![GitHub Metrics](github-metrics.svg)\
-        \n<!--END_SECTION:metrics-->' README.md
-        echo "Updated README:"
-        cat README.md
+      # 3. Manejar el archivo generado manualmente
+      - name: Move and prepare metrics
+        run: |
+          # Cambiamos a la rama para métricas o la creamos si no existe
+          git checkout -B metrics-renders
+          git config user.name "github-actions"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Mover los archivos generados al directorio actual
+          mv /metrics_renders/* ./
+          # Actualizar el README con la referencia Markdown
+          sed -i -E '/<!--START_SECTION:metrics-->/, /<!--END_SECTION:metrics-->/c\
+          <!--START_SECTION:metrics-->\
+          \n![GitHub Metrics](github-metrics.svg)\
+          \n<!--END_SECTION:metrics-->' README.md
+          echo "Updated README:"
+          cat README.md
 
       - name: Commit and push metrics
         run: |
