@@ -255,8 +255,8 @@ jobs:
 
   metrics_job:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    # permissions:
+    #   contents: write
 
     steps:
       - name: Checkout current repository
@@ -279,6 +279,11 @@ jobs:
           base: repositories          
           template: classic           
           config_timezone: Europe/Madrid
+          plugin_languages: yes
+          plugin_languages_sections: most-used
+          plugin_languages_indepth: yes
+          plugin_languages_recent_load: 20
+          plugin_languages_recent_days: 14
           filename: github-metrics.svg
           # output_action: commit
           # committer_token: ${{ secrets.PUSH_TOKEN }}
@@ -307,9 +312,11 @@ jobs:
 
       - name: Final commit and push
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add README.md
+          # git config user.name "github-actions"
+          # git config user.email "actions@github.com"
+          git config --global user.email "f.montesdoria@gmail.com"
+          git config --global user.name "fmontesdev"
+          git add github-metrics.svg
           git commit -m "Añadidas métricas al README personal" || echo "No changes to commit"
           git push
 
