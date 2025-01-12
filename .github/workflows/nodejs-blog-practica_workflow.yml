@@ -192,15 +192,18 @@ jobs:
         with:
           repository: fmontesdev/fmontesdev
           token: ${{ secrets.PUSH_TOKEN }}
+          path: personal_repo   
           clean: true
           fetch-depth: 1
       
       # Antes de actualizar las métricas
       - name: Print README before metrics update
+        working-directory: personal_repo
         run: cat README.md
 
       # Action metrics-embed para actualizar el README
       - name: Update metrics in README
+        working-directory: personal_repo
         uses: lowlighter/metrics@latest
         with:
           # PAT personal access token, diferente a GITHUB_TOKEN
@@ -222,6 +225,7 @@ jobs:
 
       # Después de actualizar las métricas
       - name: Print README after metrics update
+        working-directory: personal_repo
         run: cat README.md
 
       # # Commit y push de los cambios en el README.md
