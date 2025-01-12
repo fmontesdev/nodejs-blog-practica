@@ -189,11 +189,11 @@ jobs:
       # Checkout del repositorio personal "fmontesdev/fmontesdev"
       - name: Checkout personal README repository
         uses: actions/checkout@v4
-        with:
-          repository: fmontesdev/fmontesdev
-          token: ${{ secrets.PUSH_TOKEN }} 
-          clean: true
-          fetch-depth: 1
+        # with:
+        #   repository: fmontesdev/fmontesdev
+        #   token: ${{ secrets.PUSH_TOKEN }} 
+        #   clean: true
+        #   fetch-depth: 1
       
       # Antes de actualizar las métricas
       - name: Print README before metrics update
