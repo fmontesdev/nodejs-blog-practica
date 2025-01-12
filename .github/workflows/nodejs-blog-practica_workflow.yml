@@ -201,7 +201,7 @@ jobs:
 
       # Action metrics-embed para actualizar el README
       - name: Update metrics in README
-        uses: lowlighter/metrics@v3
+        uses: lowlighter/metrics@latest
         with:
           # PAT personal access token, diferente a GITHUB_TOKEN
           token: ${{ secrets.METRICS_TOKEN }}
