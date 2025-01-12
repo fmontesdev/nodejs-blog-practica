@@ -250,7 +250,7 @@ jobs:
       # #     git push origin main || echo "Push failed; skipping push"
 
       - name: Checkout current repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@latest
         with:
           token: ${{ secrets.PUSH_TOKEN }} 
           clean: true
