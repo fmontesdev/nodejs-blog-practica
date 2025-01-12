@@ -180,6 +180,8 @@ jobs:
   #           - add_badge_job: ${{ needs.add_badge_job.result }}
   #           - deploy_job: ${{ needs.deploy_job.result }}
 
+
+
   # metrics_job:
   #   runs-on: ubuntu-latest
   #   permissions:
@@ -249,6 +251,68 @@ jobs:
       # #     git rebase origin/main || (git rebase --abort && echo "Rebase failed; skipping pull step")
       # #     git push origin main || echo "Push failed; skipping push"
 
+
+
+  # metrics_job:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: write
+
+  #   steps:
+  #     - name: Checkout current repository
+  #       uses: actions/checkout@v3
+  #       with:
+  #         repository: fmontesdev/fmontesdev
+  #         token: ${{ secrets.PUSH_TOKEN }} 
+  #         clean: true
+  #         fetch-depth: 1
+
+  #     # Antes de actualizar las métricas
+  #     - name: Print README before metrics update
+  #       run: cat README.md
+      
+  #     - name: Update metrics in README
+  #       uses: lowlighter/metrics@latest
+  #       with:
+  #         token: ${{ secrets.METRICS_TOKEN }}
+  #         user: fmontesdev
+  #         base: repositories          
+  #         template: classic           
+  #         config_timezone: Europe/Madrid
+  #         filename: README.md
+  #         # output_action: commit
+  #         # committer_token: ${{ secrets.PUSH_TOKEN }}
+  #         # committer_branch: main
+  #         # committer_message: "docs: updated GitHub metrics"
+
+  #     # 4. Reemplazar el contenido del bloque delimitado por una referencia Markdown a la imagen
+  #     - name: Replace metrics block with markdown image using sed
+  #       run: |
+  #         sed -i -E '/<!--START_SECTION:metrics-->/, /<!--END_SECTION:metrics-->/c\
+  #         <!--START_SECTION:metrics-->\
+  #         ![GitHub Metrics](/github-metrics.svg)\
+  #         <!--END_SECTION:metrics-->' README.md
+  #         echo "README.md after replacement:"
+  #         cat README.md
+
+  #     # - name: Commit and push updated README with markdown image
+  #     #   run: |
+  #     #     git config user.name "github-actions"
+  #     #     git config user.email "actions@github.com"
+  #     #     git add README.md
+  #     #     git commit -m "docs: updated README with GitHub metrics image" || echo "No changes to commit"
+  #     #     # Traemos los cambios remotos y los integramos (usando la estrategia "theirs" para resolver conflictos)
+  #     #     git pull --rebase --strategy-option=theirs
+  #     #     git push origin main || echo "Push failed; skipping push"
+
+  #     - name: Final commit and push
+  #       run: |
+  #         git config user.name "github-actions"
+  #         git config user.email "actions@github.com"
+  #         git add README.md
+  #         git commit -m "Añadidas métricas al README personal" || echo "No changes to commit"
+  #         git push
+
   metrics_job:
     runs-on: ubuntu-latest
     permissions:
@@ -275,37 +339,42 @@ jobs:
           base: repositories          
           template: classic           
           config_timezone: Europe/Madrid
-          filename: github-metrics.svg
-          # output_action: commit
+          # filename: README.md
+          output_action: none
           # committer_token: ${{ secrets.PUSH_TOKEN }}
           # committer_branch: main
           # committer_message: "docs: updated GitHub metrics"
 
-      # 4. Reemplazar el contenido del bloque delimitado por una referencia Markdown a la imagen
-      - name: Replace metrics block with markdown image using sed
-        run: |
-          sed -i -E '/<!--START_SECTION:metrics-->/, /<!--END_SECTION:metrics-->/c\
-          <!--START_SECTION:metrics-->\
-          ![GitHub Metrics](/github-metrics.svg)\
-          <!--END_SECTION:metrics-->' README.md
-          echo "README.md after replacement:"
-          cat README.md
-
-      # - name: Commit and push updated README with markdown image
+      # # 4. Reemplazar el contenido del bloque delimitado por una referencia Markdown a la imagen
+      # - name: Replace metrics block with markdown image using sed
       #   run: |
-      #     git config user.name "github-actions"
-      #     git config user.email "actions@github.com"
-      #     git add README.md
-      #     git commit -m "docs: updated README with GitHub metrics image" || echo "No changes to commit"
-      #     # Traemos los cambios remotos y los integramos (usando la estrategia "theirs" para resolver conflictos)
-      #     git pull --rebase --strategy-option=theirs
-      #     git push origin main || echo "Push failed; skipping push"
+      #     sed -i -E '/<!--START_SECTION:metrics-->/, /<!--END_SECTION:metrics-->/c\
+      #     <!--START_SECTION:metrics-->\
+      #     ![GitHub Metrics](/github-metrics.svg)\
+      #     <!--END_SECTION:metrics-->' README.md
+      #     echo "README.md after replacement:"
+      #     cat README.md
 
-      - name: Final commit and push
+    # 3. Manejar el archivo generado manualmente
+    - name: Move and prepare metrics
+      run: |
+        # Cambiamos a la rama para métricas o la creamos si no existe
+        git checkout -B metrics-renders
+        git config user.name "github-actions"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        # Mover los archivos generados al directorio actual
+        mv /metrics_renders/* ./
+        # Actualizar el README con la referencia Markdown
+        sed -i -E '/<!--START_SECTION:metrics-->/, /<!--END_SECTION:metrics-->/c\
+        <!--START_SECTION:metrics-->\
+        \n![GitHub Metrics](github-metrics.svg)\
+        \n<!--END_SECTION:metrics-->' README.md
+        echo "Updated README:"
+        cat README.md
+
+      - name: Commit and push metrics
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add README.md
-          git commit -m "Añadidas métricas al README personal" || echo "No changes to commit"
-          git push
+          git add README.md github-metrics.svg
+          git commit -m "chore: updated metrics and README"
+          git push https://github.com/fmontesdev/fmontesdev.git metrics-renders --force
 
