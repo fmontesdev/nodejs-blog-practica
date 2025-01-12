@@ -195,16 +195,13 @@ jobs:
           clean: true
           fetch-depth: 1
       
-      - name: List repository content
-        run: ls -la
-      
       # Antes de actualizar las métricas
       - name: Print README before metrics update
         run: cat README.md
 
       # Action metrics-embed para actualizar el README
       - name: Update metrics in README
-        uses: lowlighter/metrics@latest
+        uses: lowlighter/metrics@v3
         with:
           # PAT personal access token, diferente a GITHUB_TOKEN
           token: ${{ secrets.METRICS_TOKEN }}
@@ -212,11 +209,11 @@ jobs:
           base: repositories          
           template: classic           
           config_timezone: Europe/Madrid
+          filename: README.md
           output_action: commit
           committer_token: ${{ secrets.PUSH_TOKEN }}
           committer_branch: main
           committer_message: "docs: updated GitHub metrics"
-          filename: README.md
 
       # Después de actualizar las métricas
       - name: Print README after metrics update
