@@ -300,12 +300,11 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
+          # Agrega todos los cambios pendientes
+          git add -A
+          # Si hay cambios, haz commit; si no, continúa
+          git diff --cached --quiet || git commit -m "docs: updated README with GitHub metrics image"
+          # Ahora realiza pull con rebase
           git pull --rebase --strategy-option=theirs
-          # Verificar si hay cambios
-          if ! git diff --staged --quiet; then
-            git commit -m "docs: updated README with GitHub metrics image"
-          else
-            echo "No changes to commit"
-          fi
-          git push origin main || echo "Push failed; skipping push" 
+          git push origin main || echo "Push failed; skipping push"
 
