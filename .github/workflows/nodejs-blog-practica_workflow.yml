@@ -218,9 +218,9 @@ jobs:
           plugin_languages_indepth: yes
           plugin_languages_recent_load: 20
           plugin_languages_recent_days: 14
-          filename: metrics.svg
-          output_action: file
-          committer_token: ${{ secrets.PUSH_TOKEN }}
+          # filename: metrics.svg
+          # output_action: file
+          # committer_token: ${{ secrets.PUSH_TOKEN }}
           # committer_branch: main
           # committer_message: "docs: updated GitHub metrics"
           # committer_repository: fmontesdev/fmontesdev
@@ -240,32 +240,14 @@ jobs:
       #     git commit -m "Añadidas métricas al README personal" || echo "No changes to commit"
       #     git push origin main --force
 
-      - name: Merge metrics into README
+      - name: Update README with metrics
         run: |
-          # Restaurar README original
-          cp README.md.bak README.md
-          
-          # Insertar métricas entre los marcadores
-          awk '
-          /<!--START_SECTION:metrics-->/ {
-            print
-            print "![Metrics](./metrics.svg)"
-            p = 1
-            next
-          }
-          /<!--END_SECTION:metrics-->/ {
-            p = 0
-          }
-          !p {
-            print
-          }
-          ' README.md.bak > README.md
-          
-      - name: Verify and commit changes
-        run: |
+          echo "Updating README.md with metrics..."
+          awk '/## Resultados de Métricas/ {print; print "![Metrics](github-metrics.svg)"; next} 1' README.md > temp.md && mv temp.md README.md
           git config --global user.email "f.montesdoria@gmail.com"
           git config --global user.name "fmontesdev"
-          git add metrics.svg README.md
-          git status
-          git commit -m "docs: updated metrics" || echo "No changes detected"
-          git push origin main -f
+          git add README.md
+          git commit -m "Update README.md with static GitHub metrics" || echo "No changes to commit"
+          git fetch origin main
+          git rebase origin/main || (git rebase --abort && echo "Rebase failed; skipping pull step")
+          git push origin main || echo "Push failed; skipping push"
