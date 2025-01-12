@@ -250,47 +250,23 @@ jobs:
       # #     git push origin main || echo "Push failed; skipping push"
 
       - name: Checkout current repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PUSH_TOKEN }} 
+          clean: true
+          fetch-depth: 1
+        
       
-      - name: Generate metrics SVG
-        uses: lowlighter/metrics@latest
+      - name: Update metrics in README
+        uses: lowlighter/metrics@v3
         with:
           token: ${{ secrets.METRICS_TOKEN }}
-          user: fmontesdev        
-          template: classic
-          base: header, activity      
+          user: fmontesdev
+          base: repositories          
+          # template: classic           
           config_timezone: Europe/Madrid
-          plugin_languages: yes
-          plugin_languages_sections: most-used
-          plugin_languages_indepth: yes
-          plugin_languages_recent_load: 20
-          plugin_languages_recent_days: 14
-          filename: github-metrics.svg
-          output_action: file
-
-      - name: Update README
-        run: |
-          # Backup README
-          cp README.md README.md.bak
-          
-          # Insert metrics between markers
-          awk '
-          /<!--START_SECTION:metrics-->/ {
-            print;
-            print "![Metrics](./github-metrics.svg)";
-            next;
-          }
-          /<!--END_SECTION:metrics-->/ {
-            print;
-            next;
-          }
-          {print}
-          ' README.md.bak > README.md
-
-      - name: Commit changes
-        run: |
-          git config --global user.email "f.montesdoria@gmail.com"
-          git config --global user.name "fmontesdev"
-          git add github-metrics.svg README.md
-          git commit -m "docs: update metrics"
-          git push origin main
+          filename: README.md
+          output_action: commit
+          committer_token: ${{ secrets.PUSH_TOKEN }}
+          committer_branch: main
+          committer_message: "docs: updated GitHub metrics"
