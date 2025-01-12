@@ -215,23 +215,23 @@ jobs:
           plugin_languages_recent_load: 20
           plugin_languages_recent_days: 14
           filename: README.md
-          output_action: commit
+          output_action: gist
           committer_token: ${{ secrets.PUSH_TOKEN }}
-          committer_branch: main
-          committer_message: "docs: updated GitHub metrics"
-          committer_repository: fmontesdev/fmontesdev  # Añadido este parámetro
+          # committer_branch: main
+          # committer_message: "docs: updated GitHub metrics"
+          # committer_repository: fmontesdev/fmontesdev  # Añadido este parámetro
           # config_output: markdown
 
       # Después de actualizar las métricas
       - name: Print README after metrics update
         run: cat README.md
 
-      # # Commit y push de los cambios en el README.md
-      # - name: Commit and push updated README
-      #   run: |
-      #     echo "Verificando cambios en README.md..."
-      #     git config --global user.email "f.montesdoria@gmail.com"
-      #     git config --global user.name "fmontesdev"
-      #     git add README.md
-      #     git commit -m "Añadidas métricas al README personal" || echo "No changes to commit"
-      #     git push
+      # Commit y push de los cambios en el README.md
+      - name: Commit and push updated README
+        run: |
+          echo "Verificando cambios en README.md..."
+          git config --global user.email "f.montesdoria@gmail.com"
+          git config --global user.name "fmontesdev"
+          git add README.md
+          git commit -m "Añadidas métricas al README personal" || echo "No changes to commit"
+          git push
