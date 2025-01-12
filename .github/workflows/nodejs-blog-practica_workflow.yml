@@ -118,7 +118,7 @@ jobs:
 
       # Llama a la acción personalizada que modifica el README
       - name: Update README with badge
-        uses: ./ #action.yml
+        uses: ./github_actions/add-badge
         with:
           # outcome es el valor que contiene "success" o "failure"
           outcome: ${{ steps.set_outcome.outputs.cypress_outcome }}
