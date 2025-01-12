@@ -1,5 +1,5 @@
 <!--START_SECTION:metrics-->
-
+![GitHub Metrics](/github-metrics.svg)
 <!--END_SECTION:metrics-->
 
 RESULTADOS DE LOS ÚLTIMOS TESTS
