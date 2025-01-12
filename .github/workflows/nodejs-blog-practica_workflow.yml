@@ -276,13 +276,22 @@ jobs:
           # committer_message: "docs: updated GitHub metrics"
 
       # 4. Reemplazar el contenido del bloque delimitado por una referencia Markdown a la imagen
-      - name: Replace metrics block with markdown image
+      - name: Replace metrics block with markdown image using awk
         run: |
-          # Usa sed para reemplazar el contenido entre los delimitadores
-          sed -i '/<!--START_SECTION:metrics-->/, /<!--END_SECTION:metrics--/c\
-          <!--START_SECTION:metrics-->\
-          ![GitHub Metrics](/github-metrics.svg)\
-          <!--END_SECTION:metrics-->' README.md
+          awk '{
+            if ($0 ~ /<!--START_SECTION:metrics-->/) {
+                print; 
+                print "![GitHub Metrics](/github-metrics.svg)";
+                inblock=1;
+                next;
+            }
+            if ($0 ~ /<!--END_SECTION:metrics-->/) {
+                inblock=0;
+                print;
+                next;
+            }
+            if (!inblock) { print }
+          }' README.md > tmp && mv tmp README.md
           echo "README.md after replacement:"
           cat README.md
 
