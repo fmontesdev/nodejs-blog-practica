@@ -195,6 +195,9 @@ jobs:
           clean: true
           fetch-depth: 1
       
+      - name: List repository content
+        run: ls -la
+      
       # Antes de actualizar las métricas
       - name: Print README before metrics update
         run: cat README.md
