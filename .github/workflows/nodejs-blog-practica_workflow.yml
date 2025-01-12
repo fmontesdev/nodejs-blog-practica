@@ -263,10 +263,30 @@ jobs:
           token: ${{ secrets.METRICS_TOKEN }}
           user: fmontesdev
           base: repositories          
-          # template: classic           
+          template: classic           
           config_timezone: Europe/Madrid
           filename: README.md
           output_action: commit
           committer_token: ${{ secrets.PUSH_TOKEN }}
           committer_branch: main
           committer_message: "docs: updated GitHub metrics"
+
+      # 4. Reemplazar el contenido del bloque delimitado por una referencia Markdown a la imagen
+      - name: Replace metrics block with markdown image
+        run: |
+          # Usa sed para reemplazar el contenido entre los delimitadores
+          sed -i '/<!--START_SECTION:metrics-->/, /<!--END_SECTION:metrics--/c\
+          <!--START_SECTION:metrics-->\
+          ![GitHub Metrics](/github-metrics.svg)\
+          <!--END_SECTION:metrics-->' README.md
+          echo "README.md after replacement:"
+          cat README.md
+
+      # 5. Commit y push final de los cambios en el README
+      - name: Commit and push updated README with markdown image
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add README.md
+          git commit -m "docs: updated README with GitHub metrics image" || echo "No changes to commit"
+          git push
