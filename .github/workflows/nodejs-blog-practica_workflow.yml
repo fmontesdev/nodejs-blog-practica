@@ -7,271 +7,190 @@ on:
       - main
 
 jobs:
-  # linter_job:
-  #   # Se ejecuta en una máquina virtual de Ubuntu
-  #   runs-on: ubuntu-latest
+  linter_job:
+    # Se ejecuta en una máquina virtual de Ubuntu
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     # Descarga el contenido del repositorio en la máquina virtual
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v3
+    steps:
+      # Descarga el contenido del repositorio en la máquina virtual
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-  #     # Configura la versión de Node.js que se usará
-  #     - name: Setup Node
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: 16
+      # Configura la versión de Node.js que se usará
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
 
-  #     # Instala las dependencias definidas en package.json
-  #     - name: Install dependencies
-  #       run: npm install
+      # Instala las dependencias definidas en package.json
+      - name: Install dependencies
+        run: npm install
 
-  #     # Ejecuta el linter para verificar la sintaxis del código
-  #     - name: Run Linter
-  #       run: npm run lint
+      # Ejecuta el linter para verificar la sintaxis del código
+      - name: Run Linter
+        run: npm run lint
 
-  # cypress_job:
-  #   runs-on: ubuntu-latest
-  #   # Indica que este job depende de que termine linter_job
-  #   needs: linter_job
+  cypress_job:
+    runs-on: ubuntu-latest
+    # Indica que este job depende de que termine linter_job
+    needs: linter_job
 
-  #   steps:
-  #     # Descarga el contenido del repositorio en la máquina virtual
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
+    steps:
+      # Descarga el contenido del repositorio en la máquina virtual
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  #     # Instala las dependencias definidas en package.json
-  #     - name: Install dependencies
-  #       run: npm install
+      # Instala las dependencias definidas en package.json
+      - name: Install dependencies
+        run: npm install
 
-  #     # Construye la app Next antes de arrancarla
-  #     - name: Build Next app
-  #       run: npm run build
+      # Construye la app Next antes de arrancarla
+      - name: Build Next app
+        run: npm run build
 
-  #     # Arranca el servidor en segundo plano
-  #     - name: Start Next server
-  #       run: |
-  #         npm run start &
-  #         echo "Server started in background"
+      # Arranca el servidor en segundo plano
+      - name: Start Next server
+        run: |
+          npm run start &
+          echo "Server started in background"
 
-  #     # Espera hasta que localhost:3000 esta listo
-  #     - name: Wait for server
-  #       run: npx wait-on http://localhost:3000 --timeout=60000
+      # Espera hasta que localhost:3000 esta listo
+      - name: Wait for server
+        run: npx wait-on http://localhost:3000 --timeout=60000
 
-  #     # Ejecuta los tests de Cypress, aunque falle crea cypress_exitcode.txt
-  #     - name: Run Cypress
-  #       id: run_cypress
-  #       continue-on-error: true
-  #       run: |
-  #         # Desactiva 'exit on error' en Bash para que si Cypress falla, este script continúe
-  #         set +e
-  #         npx cypress run
-  #         EXIT_CODE=$?
-  #         set -e
+      # Ejecuta los tests de Cypress, aunque falle crea cypress_exitcode.txt
+      - name: Run Cypress
+        id: run_cypress
+        continue-on-error: true
+        run: |
+          # Desactiva 'exit on error' en Bash para que si Cypress falla, este script continúe
+          set +e
+          npx cypress run
+          EXIT_CODE=$?
+          set -e
 
-  #         echo "Cypress exit code was: $EXIT_CODE"
-  #         echo "$EXIT_CODE" > cypress_exitcode.txt
-  #         ls -l
-  #         cat cypress_exitcode.txt
+          echo "Cypress exit code was: $EXIT_CODE"
+          echo "$EXIT_CODE" > cypress_exitcode.txt
+          ls -l
+          cat cypress_exitcode.txt
 
-  #     # Lee el exit code y crea result.txt con "success" o "failure"
-  #     - name: Evaluate Cypress results
-  #       run: |
-  #         exit_code=$(cat cypress_exitcode.txt)
+      # Lee el exit code y crea result.txt con "success" o "failure"
+      - name: Evaluate Cypress results
+        run: |
+          exit_code=$(cat cypress_exitcode.txt)
 
-  #         if [ "$exit_code" -eq 0 ]; then
-  #           echo "success" > result.txt
-  #         else
-  #           echo "failure" > result.txt
-  #         fi
+          if [ "$exit_code" -eq 0 ]; then
+            echo "success" > result.txt
+          else
+            echo "failure" > result.txt
+          fi
 
-  #         echo "Contenido de result.txt:"
-  #         cat result.txt
+          echo "Contenido de result.txt:"
+          cat result.txt
 
-  #     # Sube el archivo result.txt como artefacto
-  #     - name: Upload Cypress results
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: cypress-result
-  #         path: result.txt
+      # Sube el archivo result.txt como artefacto
+      - name: Upload Cypress results
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-result
+          path: result.txt
 
-  # add_badge_job:
-  #   runs-on: ubuntu-latest
-  #   needs: cypress_job
+  add_badge_job:
+    runs-on: ubuntu-latest
+    needs: cypress_job
 
-  #   steps:
-  #     # Descarga el contenido del repositorio en la máquina virtual
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
+    steps:
+      # Descarga el contenido del repositorio en la máquina virtual
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  #     # Descarga del artefacto creado en cypress_job
-  #     - name: Download cypress artifact
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: cypress-result
-  #         path: . # Descarga en el directorio raíz
+      # Descarga del artefacto creado en cypress_job
+      - name: Download cypress artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cypress-result
+          path: . # Descarga en el directorio raíz
 
-  #     # Genera un output con la lectura de result.txt
-  #     - name: Set outcome output
-  #       id: set_outcome
-  #       run: echo "::set-output name=cypress_outcome::$(cat result.txt)"
+      # Genera un output con la lectura de result.txt
+      - name: Set outcome output
+        id: set_outcome
+        run: echo "::set-output name=cypress_outcome::$(cat result.txt)"
 
-  #     # Llama a la acción personalizada que modifica el README
-  #     - name: Update README with badge
-  #       uses: ./ #action.yml
-  #       with:
-  #         # outcome es el valor que contiene "success" o "failure"
-  #         outcome: ${{ steps.set_outcome.outputs.cypress_outcome }}
+      # Llama a la acción personalizada que modifica el README
+      - name: Update README with badge
+        uses: ./ #action.yml
+        with:
+          # outcome es el valor que contiene "success" o "failure"
+          outcome: ${{ steps.set_outcome.outputs.cypress_outcome }}
 
-  #     # Hace un commit de los cambios del README
-  #     - name: Commit and push changes
-  #       run: |
-  #         git config user.name "github-actions"
-  #         git config user.email "actions@github.com"
-  #         git add README.md
-  #         git commit -m "Actualizando README con badge de Cypress"
-  #         git push
+      # Hace un commit de los cambios del README
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add README.md
+          git commit -m "Actualizando README con badge de Cypress"
+          git push
 
-  # deploy_job:
-  #   runs-on: ubuntu-latest
-  #   needs: cypress_job
+  deploy_job:
+    runs-on: ubuntu-latest
+    needs: cypress_job
     
-  #   steps:
-  #     # Descarga el contenido del repositorio en la máquina virtual
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
+    steps:
+      # Descarga el contenido del repositorio en la máquina virtual
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  #     # Despliega la aplicación en Vercel
-  #     - name: Deploy to Vercel
-  #       uses: amondnet/vercel-action@v20
-  #       with:
-  #         vercel-token: ${{ secrets.VERCEL_TOKEN }}
-  #         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-  #         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-  #         working-directory: ./
-  #         vercel-args: "--prod"
+      # Despliega la aplicación en Vercel
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./
+          vercel-args: "--prod"
 
-  # notification_job:
-  #   runs-on: ubuntu-latest
-  #   # Este job depende de los 4 jobs previos
-  #   needs: [linter_job, cypress_job, add_badge_job, deploy_job]
-  #   # Se ejecutará incluso si alguno de esos jobs ha fallado
-  #   if: always()
+  notification_job:
+    runs-on: ubuntu-latest
+    # Este job depende de los 4 jobs previos
+    needs: [linter_job, cypress_job, add_badge_job, deploy_job]
+    # Se ejecutará incluso si alguno de esos jobs ha fallado
+    if: always()
 
-  #   steps:
-  #     # Necesita acceso a archivos del repositorio
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v3
+    steps:
+      # Necesita acceso a archivos del repositorio
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-  #     # Acción personalizada que envía el correo
-  #     - name: Send notification email
-  #       uses: ./github_actions/send-mail
-  #       env:
-  #         GMAIL_USER: ${{ secrets.GMAIL_USER }}
-  #         GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
-  #       with:
-  #         to: ${{ secrets.PERSONAL_EMAIL }}
-  #         subject: "Resultado del workflow ejecutado"
-  #         body: |
-  #           Se ha realizado un push en la rama main que ha provocado la ejecución del workflow "nodejs-blog-practica_workflow" con los siguientes resultados:
+      # Acción personalizada que envía el correo
+      - name: Send notification email
+        uses: ./github_actions/send-mail
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
+        with:
+          to: ${{ secrets.PERSONAL_EMAIL }}
+          subject: "Resultado del workflow ejecutado"
+          body: |
+            Se ha realizado un push en la rama main que ha provocado la ejecución del workflow "nodejs-blog-practica_workflow" con los siguientes resultados:
 
-  #           - linter_job: ${{ needs.linter_job.result }}
-  #           - cypress_job: ${{ needs.cypress_job.result }}
-  #           - add_badge_job: ${{ needs.add_badge_job.result }}
-  #           - deploy_job: ${{ needs.deploy_job.result }}
-
-
-
-  # metrics_job:
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: write
-
-  #   steps:
-      # # Checkout del repositorio personal "fmontesdev/fmontesdev"
-      # - name: Checkout personal README repository
-      #   uses: actions/checkout@v4
-      #   # with:
-      #   #   repository: fmontesdev/fmontesdev
-      #   #   token: ${{ secrets.PUSH_TOKEN }} 
-      #   #   clean: true
-      #   #   fetch-depth: 1
-      
-      # # Antes de actualizar las métricas
-      # - name: Print README before metrics update
-      #   run: cat README.md
-
-      # # Action metrics-embed para actualizar el README
-      # - name: Update metrics in README
-      #   uses: lowlighter/metrics@latest
-      #   with:
-      #     # filename: github-metrics.svg
-      #     # PAT personal access token, diferente a GITHUB_TOKEN
-      #     token: ${{ secrets.METRICS_TOKEN }}
-      #     user: fmontesdev        
-      #     template: classic
-      #     base: header, activity      
-      #     config_timezone: Europe/Madrid
-      #     plugin_languages: yes
-      #     plugin_languages_sections: most-used
-      #     plugin_languages_indepth: yes
-      #     plugin_languages_recent_load: 20
-      #     plugin_languages_recent_days: 14
-      #     filename: README.md
-      #     output_action: commit
-      #     committer_token: ${{ secrets.PUSH_TOKEN }}
-      #     committer_branch: main
-      #     committer_message: "docs: updated GitHub metrics"
-      #     # committer_repository: fmontesdev/fmontesdev
-      #     # config_output: markdown
-
-      # # Después de actualizar las métricas
-      # - name: Print README after metrics update
-      #   run: cat README.md
-
-      # # # Commit y push de los cambios en el README.md
-      # # - name: Commit and push updated README
-      # #   run: |
-      # #     echo "Verificando cambios en README.md..."
-      # #     git config --global user.email "f.montesdoria@gmail.com"
-      # #     git config --global user.name "fmontesdev"
-      # #     git add README.md
-      # #     git commit -m "Añadidas métricas al README personal" || echo "No changes to commit"
-      # #     git push origin main --force
-
-      # # - name: Update README with metrics
-      # #   run: |
-      # #     echo "Updating README.md with metrics..."
-      # #     awk '/## Resultados de Métricas/ {print; print "![Metrics](github-metrics.svg)"; next} 1' README.md > temp.md && mv temp.md README.md
-      # #     git config --global user.email "f.montesdoria@gmail.com"
-      # #     git config --global user.name "fmontesdev"
-      # #     git add README.md
-      # #     git commit -m "Update README.md with static GitHub metrics" || echo "No changes to commit"
-      # #     git fetch origin main
-      # #     git rebase origin/main || (git rebase --abort && echo "Rebase failed; skipping pull step")
-      # #     git push origin main || echo "Push failed; skipping push"
-
-
+            - linter_job: ${{ needs.linter_job.result }}
+            - cypress_job: ${{ needs.cypress_job.result }}
+            - add_badge_job: ${{ needs.add_badge_job.result }}
+            - deploy_job: ${{ needs.deploy_job.result }}
 
   metrics_job:
     runs-on: ubuntu-latest
-    # permissions:
-    #   contents: write
+    needs: add_badge_job
 
     steps:
+      # Descarga el contenido del repositorio en la máquina virtual
       - name: Checkout current repository
         uses: actions/checkout@v3
-        # with:
-        #   repository: fmontesdev/fmontesdev
-        #   token: ${{ secrets.PUSH_TOKEN }} 
-        #   clean: true
-        #   fetch-depth: 1
-
-      # Antes de actualizar las métricas
-      - name: Print README before metrics update
-        run: cat README.md
       
-      - name: Update metrics in README
+      # Genera las métricas de GitHub
+      - name: Create metrics
         uses: lowlighter/metrics@latest
         with:
           token: ${{ secrets.METRICS_TOKEN }}
@@ -285,12 +204,8 @@ jobs:
           plugin_languages_recent_load: 20
           plugin_languages_recent_days: 14
           filename: github-metrics.svg
-          # output_action: commit
-          # committer_token: ${{ secrets.PUSH_TOKEN }}
-          # committer_branch: main
-          # committer_message: "docs: updated GitHub metrics"
 
-      # 4. Reemplazar el contenido del bloque delimitado por una referencia Markdown a la imagen
+      # Inserta las metricas del archivo svg dentro del bloque delimitado por Markdown
       - name: Replace metrics block with markdown image using sed
         run: |
           sed -i -E '/<!--START_SECTION:metrics-->/, /<!--END_SECTION:metrics-->/c\
@@ -300,101 +215,12 @@ jobs:
           echo "README.md after replacement:"
           cat README.md
 
-      # - name: Commit and push updated README with markdown image
-      #   run: |
-      #     git config user.name "github-actions"
-      #     git config user.email "actions@github.com"
-      #     git add README.md
-      #     git commit -m "docs: updated README with GitHub metrics image" || echo "No changes to commit"
-      #     # Traemos los cambios remotos y los integramos (usando la estrategia "theirs" para resolver conflictos)
-      #     git pull --rebase --strategy-option=theirs
-      #     git push origin main || echo "Push failed; skipping push"
-
+      # Hace un commit de los cambios
       - name: Final commit and push
         run: |
-          # git config user.name "github-actions"
-          # git config user.email "actions@github.com"
           git config --global user.email "f.montesdoria@gmail.com"
           git config --global user.name "fmontesdev"
           git add .
-          git commit -m "Añadidas métricas al README personal" || echo "No changes to commit"
+          git commit -m "Añadidas métricas" || echo "No changes to commit"
           git pull --rebase --strategy-option=theirs
           git push origin main
-
-  # metrics_job:
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: write
-
-    # steps:
-    #   - name: Checkout current repository
-    #     uses: actions/checkout@v3
-    #     with:
-    #       repository: fmontesdev/fmontesdev
-    #       token: ${{ secrets.PUSH_TOKEN }} 
-    #       clean: true
-    #       fetch-depth: 1
-
-    #   # Antes de actualizar las métricas
-    #   - name: Print README before metrics update
-    #     run: cat README.md
-      
-    #   - name: Update metrics in README
-    #     uses: lowlighter/metrics@latest
-    #     with:
-    #       token: ${{ secrets.METRICS_TOKEN }}
-    #       user: fmontesdev
-    #       base: repositories          
-    #       template: classic           
-    #       config_timezone: Europe/Madrid
-    #       # filename: README.md
-    #       output_action: none
-    #       # committer_token: ${{ secrets.PUSH_TOKEN }}
-    #       # committer_branch: main
-    #       # committer_message: "docs: updated GitHub metrics"
-
-    #   # # 4. Reemplazar el contenido del bloque delimitado por una referencia Markdown a la imagen
-    #   # - name: Replace metrics block with markdown image using sed
-    #   #   run: |
-    #   #     sed -i -E '/<!--START_SECTION:metrics-->/, /<!--END_SECTION:metrics-->/c\
-    #   #     <!--START_SECTION:metrics-->\
-    #   #     ![GitHub Metrics](/github-metrics.svg)\
-    #   #     <!--END_SECTION:metrics-->' README.md
-    #   #     echo "README.md after replacement:"
-    #   #     cat README.md
-
-    #   # 3. Manejar el archivo generado manualmente
-    #   - name: Move and prepare metrics
-    #     run: |
-    #       # Cambiamos a la rama para métricas o la creamos si no existe
-    #       git checkout -B metrics-renders
-    #       git config user.name "github-actions"
-    #       git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-    #       # Verificar si el archivo existe
-    #       if [ ! -f "/metrics_renders/github-metrics.svg" ]; then
-    #         echo "Error: El archivo github-metrics.svg no existe en /metrics_renders/"
-    #         exit 1
-    #       fi
-
-    #       # Ajustar permisos si es necesario
-    #       sudo chmod 644 /metrics_renders/github-metrics.svg
-
-    #       # Mover el archivo al directorio actual
-    #       mv /metrics_renders/github-metrics.svg ./
-
-    #       # Actualizar el README con la referencia Markdown
-    #       sed -i -E '/<!--START_SECTION:metrics-->/, /<!--END_SECTION:metrics-->/c\
-    #       <!--START_SECTION:metrics-->\
-    #       \n![GitHub Metrics](github-metrics.svg)\
-    #       \n<!--END_SECTION:metrics-->' README.md
-
-    #       echo "Updated README:"
-    #       cat README.md
-
-    #   - name: Commit and push metrics
-    #     run: |
-    #       git add README.md github-metrics.svg
-    #       git commit -m "chore: updated metrics and README"
-    #       git push origin metrics-renders --force
-
