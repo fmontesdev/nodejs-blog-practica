@@ -182,6 +182,8 @@ jobs:
 
   metrics_job:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       # Checkout del repositorio personal "fmontesdev/fmontesdev"
@@ -190,15 +192,8 @@ jobs:
         with:
           repository: fmontesdev/fmontesdev
           token: ${{ secrets.PUSH_TOKEN }}
-          ssh-strict: true
-          persist-credentials: false
           clean: true
-          sparse-checkout-cone-mode: true
           fetch-depth: 1
-          fetch-tags: false
-          lfs: false
-          submodules: false
-          set-safe-directory: true
       
       # Antes de actualizar las métricas
       - name: Print README before metrics update
@@ -214,17 +209,21 @@ jobs:
           base: repositories          
           template: classic           
           config_timezone: Europe/Madrid
+          output_action: commit
+          committer_token: ${{ secrets.PUSH_TOKEN }}
+          committer_branch: main
+          committer_message: "docs: updated GitHub metrics"
 
       # Después de actualizar las métricas
       - name: Print README after metrics update
         run: cat README.md
 
-      # Commit y push de los cambios en el README.md
-      - name: Commit and push updated README
-        run: |
-          echo "Verificando cambios en README.md..."
-          git config --global user.email "f.montesdoria@gmail.com"
-          git config --global user.name "fmontesdev"
-          git add README.md
-          git commit -m "Añadidas métricas al README personal" || echo "No changes to commit"
-          git push
+      # # Commit y push de los cambios en el README.md
+      # - name: Commit and push updated README
+      #   run: |
+      #     echo "Verificando cambios en README.md..."
+      #     git config --global user.email "f.montesdoria@gmail.com"
+      #     git config --global user.name "fmontesdev"
+      #     git add README.md
+      #     git commit -m "Añadidas métricas al README personal" || echo "No changes to commit"
+      #     git push
