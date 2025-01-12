@@ -219,7 +219,7 @@ jobs:
           committer_token: ${{ secrets.PUSH_TOKEN }}
           committer_branch: main
           committer_message: "docs: updated GitHub metrics"
-          config_output: markdown
+          # config_output: markdown
 
       # Después de actualizar las métricas
       - name: Print README after metrics update
