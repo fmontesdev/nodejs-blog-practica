@@ -318,7 +318,7 @@ jobs:
           git config --global user.name "fmontesdev"
           git add .
           git commit -m "Añadidas métricas al README personal" || echo "No changes to commit"
-          git push origin main --force-with-lease || echo "Force push failed; skipping push"
+          git push origin main --force
 
   # metrics_job:
   #   runs-on: ubuntu-latest
