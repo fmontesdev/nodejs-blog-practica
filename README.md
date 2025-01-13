@@ -291,6 +291,7 @@ BADGE_SUCCESS="https://img.shields.io/badge/tested%20with-Cypress-04C38E.svg"
 
 # Texto que indica dónde añadiremos el badge
 SEARCH_TEXT="RESULTADOS DE LOS ÚLTIMOS TESTS"
+![Cypress test badge](https://img.shields.io/badge/test-failure-red)
 
 # Dependiendo del OUTCOME, elegimos un badge
 if [ "$OUTCOME" = "success" ]; then
