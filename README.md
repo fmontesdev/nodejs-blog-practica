@@ -546,10 +546,9 @@ Genera y actualiza dinámicamente métricas de los lenguajes más utilizados por
         # Inserta las metricas del archivo svg dentro del bloque delimitado por Markdown
         - name: Replace metrics block with markdown image using sed
             run: |
-            sed -i -E '/<!--START_SECTION:metrics-->/, /<!--END_SECTION:metrics-->/c\
-            <!--START_SECTION:metrics-->\
-            ![GitHub Metrics](/github-metrics.svg)\
-            <!--END_SECTION:metrics-->' README.md
+<!--START_SECTION:metrics-->
+![GitHub Metrics](/github-metrics.svg)
+<!--END_SECTION:metrics-->
             echo "README.md after replacement:"
             cat README.md
 
@@ -586,5 +585,5 @@ Para ello hemos definido un PAT (personla access token) en nuestra cuenta con la
 ## Métricas
 
 <!--START_SECTION:metrics-->
-
+![GitHub Metrics](/github-metrics.svg)
 <!--END_SECTION:metrics-->
