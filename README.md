@@ -587,3 +587,7 @@ Para ello hemos definido un PAT (personla access token) en nuestra cuenta con la
 <!--START_SECTION:metrics-->
 ![GitHub Metrics](/github-metrics.svg)
 <!--END_SECTION:metrics-->
+
+## Test
+RESULTADOS DE LOS ÚLTIMOS TEST  
+![Cypress test badge](https://img.shields.io/badge/test-failure-red)
